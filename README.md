@@ -11,6 +11,10 @@ Building an autonomous RC car
 # Resources
 [Jupyter on Pi](http://makeyourownneuralnetwork.blogspot.de/2016/03/ipython-neural-networks-on-raspberry-pi.html)
 
-[OpenCV3 on Pi](http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
+[OpenCV3 on Pi (Python 2.7/3.4)](http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
+
+[OpenCV3 on Pi (Python 3.6)](https://www.scivision.co/anaconda-python-opencv3/)
 
 [Backup Pi](https://raspberry.tips/raspberrypi-einsteiger/raspberry-pi-datensicherung-erstellen/)
+
+
