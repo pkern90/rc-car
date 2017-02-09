@@ -9,12 +9,16 @@ Building an autonomous RC car
 * [Xbox game pad](https://www.amazon.com/Microsoft-Wireless-Controller-Windows-Console/dp/B004QRKWKQ/ref=sr_1_1?s=videogames&ie=UTF8&qid=1486414035&sr=1-1&keywords=xbox+gamepad+wireless)
 
 # Resources
+Unfortunately, some of the resources are in German. However, I think they still will be helpful for example as a code reference.
+
 [Jupyter on Pi](http://makeyourownneuralnetwork.blogspot.de/2016/03/ipython-neural-networks-on-raspberry-pi.html)
 
 [OpenCV3 on Pi (Python 2.7/3.4)](http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
 
 [OpenCV3 on Pi (Python 3.6)](https://www.scivision.co/anaconda-python-opencv3/)
 
-[Backup Pi](https://raspberry.tips/raspberrypi-einsteiger/raspberry-pi-datensicherung-erstellen/)
+[Backup Pi](https://raspberry.tips/raspberrypi-einsteiger/raspberry-pi-datensicherung-erstellen/)(de)
 
 [Tensorflow for Pi](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/pi_examples/)
+
+[Connect Xbox Controller](https://tutorials-raspberrypi.de/raspberry-pi-xbox-360-controller-steuern/) (de)
