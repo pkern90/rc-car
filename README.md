@@ -1,6 +1,8 @@
 # rc-car
 Building an autonomous RC car
 
+![rc car](docs/rc.jpg)
+
 # Parts
 * [Raspberry Pi 3 Model B](https://www.amazon.com/Raspberry-Pi-RASPBERRYPI3-MODB-1GB-Model-Motherboard/dp/B01CD5VC92/ref=sr_1_2?s=pc&ie=UTF8&qid=1486413487&sr=1-2&keywords=raspberry+pi+3)
 * [elego Uno Project Smart Robot Car Kit](https://www.amazon.com/Elegoo-Four-wheel-Ultrasonic-Intelligent-Educational/dp/B01DPH0SWY) 
