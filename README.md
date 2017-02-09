@@ -22,3 +22,5 @@ Unfortunately, some of the resources are in German. However, I think they still 
 [Tensorflow for Pi](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/pi_examples/)
 
 [Connect Xbox Controller](https://tutorials-raspberrypi.de/raspberry-pi-xbox-360-controller-steuern/) (de)
+
+[RPi GPIO](https://sourceforge.net/p/raspberry-gpio-python/wiki/install/)
