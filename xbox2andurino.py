@@ -1,10 +1,16 @@
 import pygame
+import serial
 
 pygame.init()
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 # Initialize the joysticks
 pygame.joystick.init()
+
+ser = serial.Serial(
+    port="/dev/ttyACM0",
+    baudrate=9600
+)
 
 l_speed = 0
 r_speed = 0
@@ -17,30 +23,35 @@ try:
 except:
     print("Joystick not found")
 
-# -------- Main Program Loop -----------
-while not joystick.get_button(6):
-    for event in pygame.event.get():
-        if event.axis == 5:
-            f_speed = int(255 * (event.value + 1) / 2)
+try:
+    ser.isOpen()
+except:
+    print("Error while opening serial")
 
-        if event.axis == 2:
-            l_trigger = event.value
+try:
+    # -------- Main Program Loop -----------
+    while not joystick.get_button(6):
+        for event in pygame.event.get():
+            if event.axis == 5:
+                f_speed = int(255 * (event.value + 1) / 2)
 
-        if event.axis == 0:
-            steer_axis = event.value
+            if event.axis == 2:
+                l_trigger = event.value
 
-        continue
+            if event.axis == 0:
+                steer_axis = event.value
 
-    l_speed = int(f_speed * (1 - abs(min(0, steer_axis))))
-    r_speed = int(f_speed * (1 - max(0, steer_axis)))
+            continue
 
-    print("Right Speed: %s Left Speed %s" % (r_speed, l_speed))
+        l_speed = int(f_speed * (1 - abs(min(0, steer_axis))))
+        r_speed = int(f_speed * (1 - max(0, steer_axis)))
 
-    # Limit to 30 frames per second
-    clock.tick(30)
- 
-# Close the window and quit.
-# If you forget this line, the program will 'hang'
-# on exit if running from IDLE.
-pygame.quit()
+        print("Right Speed: %s Left Speed %s" % (r_speed, l_speed))
+        ser.write(('%s;%s' % (l_speed, r_speed)).encode('utf-8'))
 
+        # Limit to 30 frames per second
+        clock.tick(30)
+
+finally:
+    ser.close()
+    pygame.quit()
