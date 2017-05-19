@@ -43,14 +43,16 @@ try:
 
             continue
 
-        l_speed = int(f_speed * (1 - abs(min(0, steer_axis))))
-        r_speed = int(f_speed * (1 - max(0, steer_axis)))
+        l_speed = bytes(f_speed * (1 - abs(min(0, steer_axis))))
+        r_speed = bytes(f_speed * (1 - max(0, steer_axis)))
 
         print("Right Speed: %s Left Speed %s" % (r_speed, l_speed))
-        ser.write(('%s;%s' % (l_speed, r_speed)).encode('utf-8'))
+        ser.write(b'~')
+        ser.write(l_speed)
+        ser.write(r_speed)
 
-        # Limit to 30 frames per second
         clock.tick(30)
+        print(ser.read())
 
 finally:
     ser.close()
