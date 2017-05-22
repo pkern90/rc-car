@@ -1,18 +1,19 @@
-int in1 = 9;
-int in2 = 8;
-int in3 = 7;
-int in4 = 6;
-int ENA = 11;
-int ENB = 5;
+int in1=9;
+int in2=8;
+int in3=7;
+int in4=6;
+/*define channel enable output pins*/
+int ENA=10;
+int ENB=5;
 
 void _mForward(int l_speed, int r_speed)
 {
- analogWrite(ENA,l_speed);
- analogWrite(ENB,r_speed);
- digitalWrite(in1,LOW);
- digitalWrite(in2,HIGH);
- digitalWrite(in3,LOW);
- digitalWrite(in4,HIGH);
+  analogWrite(ENA,l_speed);
+  analogWrite(ENB,r_speed);
+  digitalWrite(in1,LOW);//digital output
+  digitalWrite(in2,HIGH);
+  digitalWrite(in3,LOW);
+  digitalWrite(in4,HIGH);
  Serial.println("move!");
 }
 
@@ -32,7 +33,7 @@ void setup() {
   pinMode(ENA,OUTPUT);
   pinMode(ENB,OUTPUT);
   _mForward(100, 100);
-  delay(100);
+  delay(1000);
    _mStop();
 
 }

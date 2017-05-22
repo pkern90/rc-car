@@ -42,7 +42,6 @@ try:
 
             if event.axis == 0:
                 steer_axis = event.value
-
             continue
 
         l_speed = f_speed * (1 - abs(min(0, steer_axis)))
