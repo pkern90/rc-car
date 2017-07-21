@@ -5,6 +5,7 @@ import cv2
 import os
 from datetime import datetime
 import time
+from multiprocessing import Process, Queue
 
 
 pygame.init()
@@ -29,6 +30,8 @@ steer_thresh = 0.01
 is_recording = False
 img_path = os.path.join('rec', 'img')
 log_path = 'rec'
+
+queue = Queue()
 
 if not os.path.exists(img_path):
     os.makedirs(img_path)
@@ -55,10 +58,36 @@ except Error as e:
     print("Error accessing the camera")
     print(e)
 
-try:
-    f = open(os.path.join(log_path, 'log.csv'), 'w')
-except:
-    print("Error opening the file")
+
+
+
+def writer(queue):
+    try:
+        f = open(os.path.join(log_path, 'log.csv'), 'w', encoding="utf-8")
+    except:
+        print("Error opening the file")
+        
+    while True:
+        f_speed, steer_axis  = queue.get()
+        if f_speed is not None :
+            ret, frame = cap.read()
+            if ret:
+                print('capure image')
+                
+                ts = datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H_%M_%S_%fZ')
+                img_name = 'img_%s.jpg' % ts
+                cv2.imwrite(os.path.join(img_path, img_name), frame)
+
+                log_line = '%s,%d,%0.7f\n' % (img_name, f_speed, steer_axis)
+                f.write(log_line)
+                f.flush()
+
+    f.close()
+
+
+writer_p = Process(target=writer, args=((queue),))
+writer_p.daemon = True
+writer_p.start() 
 
 try:
     # -------- Main Program Loop -----------
@@ -78,19 +107,13 @@ try:
                         steer_axis = 0
 
             if hasattr(event, 'button'):
-                if event.button == 4:
+                if event.button == 4 and event.type == pygame.JOYBUTTONUP:
                     is_recording = not is_recording
             continue
 
-        if is_recording:
-            ret, frame = cap.read()
-            if ret:
-                ts = datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H_%M_%S')
-                img_name = 'img_%s.jpg' % ts
-                cv2.imwrite(os.path.join(img_path, img_name), frame)
-
-                log_line = '%s,%0.7f,%0.7f\n' % (img_name, f_speed, steer_axis)
-                f.write(log_line)
+        if is_recording == True:
+            queue.put((f_speed, steer_axis))
+                                
 
 
         l_speed = f_speed * (1 - abs(min(0, steer_axis)))
@@ -109,4 +132,10 @@ try:
 finally:
     ser.close()
     pygame.quit()
-    f.close()
+
+    while True:
+        writer_p.terminate()
+        time.sleep(0.1)
+        if not writer_p.is_alive():
+            writer_p.join(timeout=1.0)
+            queue.close()
