@@ -1,6 +1,10 @@
 import pygame
 import serial
 import struct
+import cv2
+import os
+from datetime import datetime
+import time
 
 
 pygame.init()
@@ -10,7 +14,7 @@ clock = pygame.time.Clock()
 pygame.joystick.init()
 
 ser = serial.Serial(
-    port="/dev/tty.usbmodem1411",
+    port="/dev/ttyACM0",
     baudrate=9600
 )
 
@@ -18,6 +22,19 @@ l_speed = 0
 r_speed = 0
 f_speed = 0
 steer_axis = 0
+
+
+steer_thresh = 0.01
+
+is_recording = False
+img_path = os.path.join('rec', 'img')
+log_path = 'rec'
+
+if not os.path.exists(img_path):
+    os.makedirs(img_path)
+
+if not os.path.exists(log_path):
+    os.makedirs(log_path)
 
 try:
     joystick = pygame.joystick.Joystick(0)
@@ -31,18 +48,50 @@ except:
     print("Error while opening serial")
 
 try:
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320);
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240);
+except Error as e:
+    print("Error accessing the camera")
+    print(e)
+
+try:
+    f = open(os.path.join(log_path, 'log.csv'), 'w')
+except:
+    print("Error opening the file")
+
+try:
     # -------- Main Program Loop -----------
     while not joystick.get_button(6):
         for event in pygame.event.get():
-            if event.axis == 5:
-                f_speed = int(255 * (event.value + 1) / 2)
+            if hasattr(event, 'axis'):
+                if event.axis == 5:
+                    f_speed = int(255 * (event.value + 1) / 2)
 
-            if event.axis == 2:
-                l_trigger = event.value
+                if event.axis == 2:
+                    l_trigger = event.value
 
-            if event.axis == 0:
-                steer_axis = event.value
+                if event.axis == 0:
+                    if abs(event.value) > steer_axis: 
+                        steer_axis = event.value
+                    else:
+                        steer_axis = 0
+
+            if hasattr(event, 'button'):
+                if event.button == 4:
+                    is_recording = not is_recording
             continue
+
+        if is_recording:
+            ret, frame = cap.read()
+            if ret:
+                ts = datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H_%M_%S')
+                img_name = 'img_%s.jpg' % ts
+                cv2.imwrite(os.path.join(img_path, img_name), frame)
+
+                log_line = '%s,%0.7f,%0.7f\n' % (img_name, f_speed, steer_axis)
+                f.write(log_line)
+
 
         l_speed = f_speed * (1 - abs(min(0, steer_axis)))
         r_speed = f_speed * (1 - max(0, steer_axis))
@@ -54,9 +103,10 @@ try:
         ser.write(l)
         ser.write(r)
 
-        clock.tick(30)
+        clock.tick(10)
         print(ser.readline())
 
 finally:
     ser.close()
     pygame.quit()
+    f.close()
