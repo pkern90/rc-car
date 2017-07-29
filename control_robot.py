@@ -24,6 +24,7 @@ r_speed = 0
 f_speed = 0
 steer_axis = 0
 
+MAX_SPEED = 100
 
 steer_thresh = 0.01
 
@@ -115,9 +116,9 @@ try:
             queue.put((f_speed, steer_axis))
                                 
 
-
-        l_speed = f_speed * (1 - abs(min(0, steer_axis)))
-        r_speed = f_speed * (1 - max(0, steer_axis))
+        f_speed = min(MAX_SPEED, f_speed)
+        r_speed = f_speed * (1 - abs(min(0, steer_axis)))
+        l_speed = f_speed * (1 - max(0, steer_axis))
         l = struct.pack('>B', int(l_speed))
         r = struct.pack('>B', int(r_speed))
 
@@ -126,7 +127,7 @@ try:
         ser.write(l)
         ser.write(r)
 
-        clock.tick(10)
+        clock.tick(5)
         print(ser.readline())
 
 finally:
