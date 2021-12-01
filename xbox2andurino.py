@@ -32,14 +32,14 @@ try:
     # -------- Main Program Loop -----------
     while not joystick.get_button(6):
         for event in pygame.event.get():
-            if event.axis == 5:
-                f_speed = int(255 * (event.value + 1) / 2)
-
-            if event.axis == 2:
-                l_trigger = event.value
-
             if event.axis == 0:
                 steer_axis = event.value
+
+            elif event.axis == 2:
+                l_trigger = event.value
+
+            elif event.axis == 5:
+                f_speed = int(255 * (event.value + 1) / 2)
 
             continue
 

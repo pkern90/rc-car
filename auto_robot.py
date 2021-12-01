@@ -67,25 +67,25 @@ try:
     # -------- Main Program Loop -----------
     while not joystick.get_button(6):
         for event in pygame.event.get():
-            if hasattr(event, 'button'):
-                if event.button == 4 and event.type == pygame.JOYBUTTONUP:
-                    is_auto = not is_auto
-                    l_trigger = 0
-                    f_speed = 0
-                    
+            if (
+                hasattr(event, 'button')
+                and event.button == 4
+                and event.type == pygame.JOYBUTTONUP
+            ):
+                is_auto = not is_auto
+                l_trigger = 0
+                f_speed = 0
+
 
             if hasattr(event, 'axis') and not is_auto:
-                if event.axis == 5:
-                    f_speed = int(255 * (event.value + 1) / 2)
-
-                if event.axis == 2:
+                if event.axis == 0:
+                    steer_axis = event.value if abs(event.value) > steer_axis else 0
+                elif event.axis == 2:
                     l_trigger = event.value
 
-                if event.axis == 0:
-                    if abs(event.value) > steer_axis: 
-                        steer_axis = event.value
-                    else:
-                        steer_axis = 0
+                elif event.axis == 5:
+                    f_speed = int(255 * (event.value + 1) / 2)
+
             continue
 
         if is_auto:
@@ -112,7 +112,7 @@ try:
         ser.write(b'~')
         ser.write(l)
         ser.write(r)
-        
+
         clock.tick(10)
         print(ser.readline())
 

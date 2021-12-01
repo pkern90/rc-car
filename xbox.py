@@ -77,24 +77,25 @@ class Joystick:
     """
     def refresh(self):
         # Refresh the joystick readings based on regular defined freq
-        if self.refreshTime < time.time():
-            self.refreshTime = time.time() + self.refreshDelay  #set next refresh time
-            # If there is text available to read from xboxdrv, then read it.
-            readable, writeable, exception = select.select([self.pipe],[],[],0)
-            if readable:
-                # Read every line that is availabe.  We only need to decode the last one.
-                while readable:
-                    response = self.pipe.readline()
-                    # A zero length response means controller has been unplugged.
-                    if len(response) == 0:
-                        raise IOError('Xbox controller disconnected from USB')
-                    readable, writeable, exception = select.select([self.pipe],[],[],0)
-                # Valid controller response will be 140 chars.  
-                if len(response) == 140:
-                    self.connectStatus = True
-                    self.reading = response
-                else:  #Any other response means we have lost wireless or controller battery
-                    self.connectStatus = False
+        if self.refreshTime >= time.time():
+            return
+        self.refreshTime = time.time() + self.refreshDelay  #set next refresh time
+        # If there is text available to read from xboxdrv, then read it.
+        readable, writeable, exception = select.select([self.pipe],[],[],0)
+        if readable:
+            # Read every line that is availabe.  We only need to decode the last one.
+            while readable:
+                response = self.pipe.readline()
+                # A zero length response means controller has been unplugged.
+                if len(response) == 0:
+                    raise IOError('Xbox controller disconnected from USB')
+                readable, writeable, exception = select.select([self.pipe],[],[],0)
+            # Valid controller response will be 140 chars.  
+            if len(response) == 140:
+                self.connectStatus = True
+                self.reading = response
+            else:  #Any other response means we have lost wireless or controller battery
+                self.connectStatus = False
 
     """Return a status of True, when the controller is actively connected.
     Either loss of wireless signal or controller powering off will break connection.  The
@@ -139,11 +140,10 @@ class Joystick:
     def axisScale(self,raw,deadzone):
         if abs(raw) < deadzone:
             return 0.0
+        if raw < 0:
+            return (raw + deadzone) / (32768.0 - deadzone)
         else:
-            if raw < 0:
-                return (raw + deadzone) / (32768.0 - deadzone)
-            else:
-                return (raw - deadzone) / (32767.0 - deadzone)
+            return (raw - deadzone) / (32767.0 - deadzone)
 
     # Dpad Up status - returns 1 (pressed) or 0 (not pressed)
     def dpadUp(self):

@@ -95,26 +95,25 @@ try:
     while not joystick.get_button(6):
         for event in pygame.event.get():
             if hasattr(event, 'axis'):
-                if event.axis == 5:
-                    f_speed = int(255 * (event.value + 1) / 2)
-
-                if event.axis == 2:
+                if event.axis == 0:
+                    steer_axis = event.value if abs(event.value) > steer_axis else 0
+                elif event.axis == 2:
                     l_trigger = event.value
 
-                if event.axis == 0:
-                    if abs(event.value) > steer_axis: 
-                        steer_axis = event.value
-                    else:
-                        steer_axis = 0
+                elif event.axis == 5:
+                    f_speed = int(255 * (event.value + 1) / 2)
 
-            if hasattr(event, 'button'):
-                if event.button == 4 and event.type == pygame.JOYBUTTONUP:
-                    is_recording = not is_recording
+            if (
+                hasattr(event, 'button')
+                and event.button == 4
+                and event.type == pygame.JOYBUTTONUP
+            ):
+                is_recording = not is_recording
             continue
 
         if is_recording == True:
             queue.put((f_speed, steer_axis))
-                                
+
 
         f_speed = min(MAX_SPEED, f_speed)
         r_speed = f_speed * (1 - abs(min(0, steer_axis)))
